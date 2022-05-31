@@ -15,27 +15,33 @@ class Lagrange:
     def __init__(self, x):
         self.x = x
 
-    def __call__(self, y, j):
+    def __call__(self, y, i):
         return np.prod(
             [
-                (y - self.x[i]) / (self.x[j] - self.x[i])
-                for i in range(len(self.x))
-                if i != j
+                (y - self.x[j]) / (self.x[i] - self.x[j])
+                for j in range(len(self.x))
+                if j != i
             ]
         )
 
-    def derivative(self, y, j):
+    def derivative(self, y, i):
         return np.sum(
             [
-                np.prod([y - self.x[i] for i in range(len(self.x)) if i != k])
+                np.prod(
+                    [
+                        y - self.x[j]
+                        for j in range(len(self.x))
+                        if j != i and j != k
+                    ]
+                )
                 for k in range(len(self.x))
+                if k != i
             ]
         ) / np.prod(
-            [self.x[j] - self.x[k] for k in range(len(self.x)) if k != j]
+            [self.x[i] - self.x[j] for j in range(len(self.x)) if j != i]
         )
 
     def second_derivative(self, y, j):
-
         return 2 * np.sum(
             [
                 np.sum(
@@ -72,18 +78,18 @@ class Interpolant:
         self.inter = Lagrange(self.x[self.s : self.s + self.q + 1])
 
     def __call__(self, y):
-        return np.array([self.inter(y, j) for j in range(self.q + 1)])
+        return np.array([self.inter(y, i) for i in range(self.q + 1)])
 
     def derivative(self, y):
         """Return the derivative of the interpolant at y."""
         return np.array(
-            [self.inter.derivative(y, j) for j in range(self.q + 1)]
+            [self.inter.derivative(y, i) for i in range(self.q + 1)]
         )
 
     def second_derivative(self, y):
         """Return the second derivative of the interpolant at y."""
         return np.array(
-            [self.inter.second_derivative(y, j) for j in range(self.q + 1)]
+            [self.inter.second_derivative(y, i) for i in range(self.q + 1)]
         )
 
 
