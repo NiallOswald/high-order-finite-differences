@@ -230,9 +230,7 @@ class Interpolation:
             if k > max_iter:
                 raise RuntimeError("Endpoints do not converge.")
 
-        return endpoints, Stencil(
-            np.concatenate(np.array([-1]) + extrema + np.array([1])), self.q
-        )
+        return endpoints, Stencil(np.concatenate(([-1], extrema, [1])), self.q)
 
     def _find_extrema(self, endpoints, poly_factors):
         return np.array(
