@@ -100,13 +100,19 @@ class Stencil:
         s = 0
         self.stencil = []
         for i in range(n + 1):
-            if i >= self.q // 2 and s < n - self.q:
+            if i > self.q // 2 and s < n - self.q:
                 s += 1
 
             self.stencil.append(Interpolant(self.x, self.q, s))
 
+    def __len__(self):
+        return len(self.stencil)
+
     def __getitem__(self, i):
         return self.stencil[i]
+
+    def __iter__(self):
+        return iter(self.stencil)
 
 
 class PiFactor:
