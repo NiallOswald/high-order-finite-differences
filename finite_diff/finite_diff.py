@@ -73,13 +73,6 @@ class Stencil:
     def __getitem__(self, i):
         return self.stencil[i]
 
-    def __call__(self, y):
-        return [inter(y) for inter in self.stencil]
-
-    def derivative(self, y):
-        """Return the derivatives of the stencil at y."""
-        return [inter.derivative(y) for inter in self.stencil]
-
 
 class PiFactor:
     def __init__(self, x, q, s):
@@ -144,22 +137,11 @@ class PolyFactor:
 
             self.poly_factors.append(PiFactor(self.x, self.q, s))
 
-    def __call__(self, y):
-        return [factor(y) for factor in self.poly_factors]
-
     def __len__(self):
         return len(self.poly_factors)
 
     def __getitem__(self, i):
         return self.poly_factors[i]
-
-    def derivative(self, y):
-        """Return the derivatives of the pi factors at y."""
-        return [factor.derivative(y) for factor in self.poly_factors]
-
-    def second_derivative(self, y):
-        """Return the second derivatives of the pi factors at y."""
-        return [factor.second_derivative(y) for factor in self.poly_factors]
 
     def __iter__(self):
         return iter(self.poly_factors)
@@ -248,7 +230,14 @@ class Interpolation:
             + abs(abs(factors[-1](extrema[-1])) - abs(factors[-1](1)))
         )
 
-    def __call__(self, i, y):
+    def __call__(self, y):
+        if y < self.endpoints[0] or y > self.endpoints[-1]:
+            raise ValueError("Outside of interpolation domain.")
+
+        for i, e in enumerate(self.endpoints[1:]):
+            if y < e:
+                break
+
         return self.inter[i](y)
 
     def __getitem__(self, i):
