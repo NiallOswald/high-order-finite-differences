@@ -43,11 +43,11 @@ class Lagrange:
                         np.prod(
                             [
                                 y - self.x[i]
-                                for i in range(self.q + 1)
+                                for i in range(len(self.x))
                                 if i != j and i != k
                             ]
                         )
-                        for j in range(k + 1, self.q + 1)
+                        for j in range(k + 1, len(self.x))
                     ]
                 )
                 / np.prod(
@@ -57,7 +57,7 @@ class Lagrange:
                         if k != j
                     ]
                 )
-                for k in range(self.q + 1)
+                for k in range(len(self.x))
             ]
         )
 
@@ -76,11 +76,15 @@ class Interpolant:
 
     def derivative(self, y):
         """Return the derivative of the interpolant at y."""
-        return [self.inter.derivative(y, j) for j in range(self.q + 1)]
+        return np.array(
+            [self.inter.derivative(y, j) for j in range(self.q + 1)]
+        )
 
     def second_derivative(self, y):
         """Return the second derivative of the interpolant at y."""
-        return [self.inter.second_derivative(y, j) for j in range(self.q + 1)]
+        return np.array(
+            [self.inter.second_derivative(y, j) for j in range(self.q + 1)]
+        )
 
 
 class Stencil:
