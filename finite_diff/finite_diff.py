@@ -72,7 +72,7 @@ class Interpolant:
         self.inter = Lagrange(self.x[self.s : self.s + self.q + 1])
 
     def __call__(self, y):
-        return [self.inter(y, j) for j in range(self.q + 1)]
+        return np.array([self.inter(y, j) for j in range(self.q + 1)])
 
     def derivative(self, y):
         """Return the derivative of the interpolant at y."""
