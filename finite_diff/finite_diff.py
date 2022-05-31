@@ -120,6 +120,12 @@ class Interpolant:
             [self.inter.second_derivative(y, i) for i in range(self.q + 1)]
         )
 
+    def nderivative(self, y, k):
+        """Return the kth derivative of the interpolant at y."""
+        return np.array(
+            [self.inter.nderivative(y, i, k) for i in range(self.q + 1)]
+        )
+
 
 class Stencil:
     """A stencil of unbounded interpolants."""
@@ -328,6 +334,9 @@ class Interpolation:
 
     def second_derivative(self, y):
         return self.inter[self._find_domain(y)].second_derivative(y)
+
+    def nderivative(self, y, k):
+        return self.inter[self._find_domain(y)].nderivative(y, k)
 
 
 def newton_raphson(x, f, df, tol=1e-8):
