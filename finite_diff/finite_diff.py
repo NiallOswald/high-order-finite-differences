@@ -41,30 +41,58 @@ class Lagrange:
             [self.x[i] - self.x[j] for j in range(len(self.x)) if j != i]
         )
 
-    def second_derivative(self, y, j):
-        return 2 * np.sum(
+    def second_derivative(self, y, i):
+        return np.sum(
             [
                 np.sum(
                     [
                         np.prod(
                             [
-                                y - self.x[i]
-                                for i in range(len(self.x))
-                                if i != j and i != k
+                                y - self.x[j]
+                                for j in range(len(self.x))
+                                if j != i and j != k and j != l
                             ]
                         )
-                        for j in range(k + 1, len(self.x))
-                    ]
-                )
-                / np.prod(
-                    [
-                        self.x[j] - self.x[k]
-                        for k in range(len(self.x))
-                        if k != j
+                        for l in range(len(self.x))
+                        if l != i and l != k
                     ]
                 )
                 for k in range(len(self.x))
+                if k != i
             ]
+        ) / np.prod(
+            [self.x[i] - self.x[j] for j in range(len(self.x)) if j != i]
+        )
+
+    def nderivative(self, y, i, k):
+        n = len(self.x)
+        counters = [i] + [0 for _ in range(k)]
+        total = 0
+        index = 1
+
+        while index:
+            while counters[index] < n:
+                if counters[index] in counters[:index]:
+                    counters[index] += 1
+                    continue
+
+                if index < k:
+                    index += 1
+                else:
+                    total += np.prod(
+                        [y - self.x[j] for j in range(n) if j not in counters]
+                    )
+                    counters[index] += 1
+
+            counters[index] = 0
+            index -= 1
+            counters[index] += 1
+
+        return total / self._denominator(i)
+
+    def _denominator(self, i):
+        return np.prod(
+            [self.x[i] - self.x[j] for j in range(len(self.x)) if j != i]
         )
 
 
