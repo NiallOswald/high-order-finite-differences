@@ -34,6 +34,33 @@ class Lagrange:
             [self.x[j] - self.x[k] for k in range(len(self.x)) if k != j]
         )
 
+    def second_derivative(self, y, j):
+
+        return 2 * np.sum(
+            [
+                np.sum(
+                    [
+                        np.prod(
+                            [
+                                y - self.x[i]
+                                for i in range(self.q + 1)
+                                if i != j and i != k
+                            ]
+                        )
+                        for j in range(k + 1, self.q + 1)
+                    ]
+                )
+                / np.prod(
+                    [
+                        self.x[j] - self.x[k]
+                        for k in range(len(self.x))
+                        if k != j
+                    ]
+                )
+                for k in range(self.q + 1)
+            ]
+        )
+
 
 class Interpolant:
     """An interpolant for a set of points x, q points, and offset s."""
@@ -50,6 +77,10 @@ class Interpolant:
     def derivative(self, y):
         """Return the derivative of the interpolant at y."""
         return [self.inter.derivative(y, j) for j in range(self.q + 1)]
+
+    def second_derivative(self, y):
+        """Return the second derivative of the interpolant at y."""
+        return [self.inter.second_derivative(y, j) for j in range(self.q + 1)]
 
 
 class Stencil:
@@ -230,7 +261,10 @@ class Interpolation:
             + abs(abs(factors[-1](extrema[-1])) - abs(factors[-1](1)))
         )
 
-    def __call__(self, y):
+    def __getitem__(self, i):
+        return self.inter[i]
+
+    def _find_domain(self, y):
         if y < self.endpoints[0] or y > self.endpoints[-1]:
             raise ValueError("Outside of interpolation domain.")
 
@@ -238,10 +272,16 @@ class Interpolation:
             if y < e:
                 break
 
-        return self.inter[i](y)
+        return i
 
-    def __getitem__(self, i):
-        return self.inter[i]
+    def __call__(self, y):
+        return self.inter[self._find_domain(y)](y)
+
+    def derivative(self, y):
+        return self.inter[self._find_domain(y)].derivative(y)
+
+    def second_derivative(self, y):
+        return self.inter[self._find_domain(y)].second_derivative(y)
 
 
 def newton_raphson(x, f, df, tol=1e-8):
