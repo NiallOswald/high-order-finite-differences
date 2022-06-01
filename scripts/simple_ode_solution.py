@@ -1,3 +1,5 @@
+"""Solve a simple ODE using the high-order finite difference method."""
+
 from finite_diff.finite_diff import Interpolation
 import numpy as np
 import matplotlib.pyplot as plt

@@ -11,7 +11,7 @@ class ConvergenceError(RuntimeError):
 
 
 class Lagrange:
-    """A Base class for Lagrange and PiFactor."""
+    """A general Lagrange interpolation polynomial."""
 
     def __init__(self, x):
         self.x = x
@@ -19,11 +19,13 @@ class Lagrange:
         self.slicers = {}
 
     def __call__(self, y, i):
+        """Evaluate the Lagrange polynomial about x[i] at y."""
         index_slice = np.ones(self.n, dtype=bool)
         index_slice[i] = False
         return np.prod(y - self.x[index_slice]) / self._denominator(i)
 
     def nderivative(self, y, i, k):
+        """Evaluate the value of the kth derivative about x[i] at y."""
         if (i, k) not in self.slicers:
             self._build_slicer(i, k)
         slicer = self.slicers[(i, k)]
@@ -54,7 +56,7 @@ class Lagrange:
 
 
 class Interpolant:
-    """An interpolant for a set of points x, q points, and offset s."""
+    """An interpolant for a set of points x, q points, and an offset s."""
 
     def __init__(self, x, q, s):
         self.x = x
@@ -63,10 +65,11 @@ class Interpolant:
         self.inter = Lagrange(self.x[self.s : self.s + self.q + 1])
 
     def __call__(self, y):
+        """Evaluate the interpolant at y."""
         return np.array([self.inter(y, i) for i in range(self.q + 1)])
 
     def nderivative(self, y, k):
-        """Return the kth derivative of the interpolant at y."""
+        """Evaluate the kth derivative of the interpolant at y."""
         return np.array(
             [self.inter.nderivative(y, i, k) for i in range(self.q + 1)]
         )
@@ -80,6 +83,15 @@ class Stencil:
         self.q = q
         self._build_stencil()
 
+    def __len__(self):
+        return len(self.stencil)
+
+    def __getitem__(self, i):
+        return self.stencil[i]
+
+    def __iter__(self):
+        return iter(self.stencil)
+
     def _build_stencil(self):
         n = len(self.x) - 1
         s = 0
@@ -90,17 +102,10 @@ class Stencil:
 
             self.stencil.append(Interpolant(self.x, self.q, s))
 
-    def __len__(self):
-        return len(self.stencil)
-
-    def __getitem__(self, i):
-        return self.stencil[i]
-
-    def __iter__(self):
-        return iter(self.stencil)
-
 
 class PolyFactor:
+    """Polynomial factors appearing in the error terms."""
+
     def __init__(self, x, q):
         self.x = x
         self.q = q
@@ -109,16 +114,20 @@ class PolyFactor:
         self.slicers = {}
 
     def __call__(self, y, i):
+        """Evaluate the ith polynomial factor at y."""
         s = self._find_s(i)
         return np.prod([y - self.x[s + k] for k in range(self.q + 1)])
 
     def derivative(self, y, i):
+        """Evaluate the derivative of the ith polynomial factor at y."""
         return self.nderivative(y, i, 1)
 
     def second_derivative(self, y, i):
+        """Evaluate the second derivative of the ith polynomial factor at y."""
         return self.nderivative(y, i, 2)
 
     def nderivative(self, y, i, k):
+        """Evaluate the kth derivative of the ith polynomial factor at y."""
         s = self._find_s(i)
 
         if k not in self.slicers:
@@ -168,6 +177,16 @@ class Interpolation:
 
     def __getitem__(self, i):
         return self.inter[i]
+
+    def __call__(self, y):
+        """Evaluate the final interpolation at y."""
+        p = self.inter[self._find_domain(y)]
+        return self._spacing(p, p(y))
+
+    def nderivative(self, y, k):
+        """Evaluate the kth derivative of the final interpolation at y."""
+        p = self.inter[self._find_domain(y)]
+        return self._spacing(p, p.nderivative(y, k))
 
     def _find_endpoints(self, tol, max_iter):
         endpoints = np.linspace(-1, 1, self.n + 2)
@@ -260,14 +279,6 @@ class Interpolation:
         return np.concatenate(
             [np.zeros(p.s), u, np.zeros(self.n - self.q - p.s)]
         )
-
-    def __call__(self, y):
-        p = self.inter[self._find_domain(y)]
-        return self._spacing(p, p(y))
-
-    def nderivative(self, y, k):
-        p = self.inter[self._find_domain(y)]
-        return self._spacing(p, p.nderivative(y, k))
 
 
 def newton_raphson(x, f, df, tol=1e-8, **kwargs):
