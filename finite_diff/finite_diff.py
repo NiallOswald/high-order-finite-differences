@@ -9,29 +9,25 @@ class ConvergenceError(RuntimeError):
     pass
 
 
-class Lagrange:
-    """A general Lagrange polynomial for a set of points x."""
+class BaseLagrange:
+    """A Base class for Lagrange and PiFactor."""
 
     def __init__(self, x):
         self.x = x
+        self.n = len(x)
 
     def __call__(self, y, i):
-        return np.prod(
-            [
-                (y - self.x[j]) / (self.x[i] - self.x[j])
-                for j in range(len(self.x))
-                if j != i
-            ]
-        )
+        index_slice = np.ones(self.n, dtype=bool)
+        index_slice[i] = False
+        return np.prod(y - self.x[index_slice])
 
     def nderivative(self, y, i, k):
-        n = len(self.x)
-        counters = [i] + [0 for _ in range(k)]
+        counters = np.concatenate(([i], np.zeros(k, dtype=int)), dtype=int)
         total = 0
         index = 1
 
         while index:
-            while counters[index] < n:
+            while counters[index] < self.n:
                 if counters[index] in counters[:index]:
                     counters[index] += 1
                     continue
@@ -39,21 +35,31 @@ class Lagrange:
                 if index < k:
                     index += 1
                 else:
-                    total += np.prod(
-                        [y - self.x[j] for j in range(n) if j not in counters]
-                    )
+                    index_slice = np.ones(self.n, dtype=bool)
+                    index_slice[counters] = False
+                    total += np.prod(y - self.x[index_slice])
                     counters[index] += 1
 
             counters[index] = 0
             index -= 1
             counters[index] += 1
 
-        return total / self._denominator(i)
+        return total
+
+
+class Lagrange(BaseLagrange):
+    """A general Lagrange polynomial for a set of points x."""
+
+    def __call__(self, y, i):
+        return super()(y, i) / self._denominator(i)
+
+    def nderivative(self, y, i, k):
+        return super().nderivative(y, i, k) / self._denominator(i)
 
     def _denominator(self, i):
-        return np.prod(
-            [self.x[i] - self.x[j] for j in range(len(self.x)) if j != i]
-        )
+        index_slice = np.ones(self.n, dtype=bool)
+        index_slice[i] = False
+        return np.prod(self.x[i] - self.x[index_slice])
 
 
 class Interpolant:
@@ -223,6 +229,8 @@ class Interpolation:
 
             if k > max_iter:
                 raise RuntimeError("Endpoints do not converge.")
+
+        print("Interpolation complete!")
 
         return endpoints, Stencil(np.concatenate(([-1], extrema, [1])), self.q)
 
