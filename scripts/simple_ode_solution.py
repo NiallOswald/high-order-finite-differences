@@ -15,4 +15,5 @@ A = np.concatenate(
 b = np.concatenate([[-1 / 3], x[1:] ** 2])
 
 plt.plot(x, np.dot(np.linalg.inv(A), b))
+plt.plot(x, (x**3) / 3)
 plt.show()
