@@ -1,6 +1,7 @@
 """High Order Finite Differences based on M Hermanns and J A Hernández."""
 
 import numpy as np
+from sympy.utilities.iterables import multiset_permutations
 
 
 class ConvergenceError(RuntimeError):
@@ -15,6 +16,7 @@ class Lagrange:
     def __init__(self, x):
         self.x = x
         self.n = len(x)
+        self.slicers = {}
 
     def __call__(self, y, i):
         index_slice = np.ones(self.n, dtype=bool)
@@ -22,34 +24,33 @@ class Lagrange:
         return np.prod(y - self.x[index_slice]) / self._denominator(i)
 
     def nderivative(self, y, i, k):
-        counters = np.concatenate(([i], np.zeros(k, dtype=int)), dtype=int)
-        total = 0
-        index = 1
+        if (i, k) not in self.slicers:
+            self._build_slicer(i, k)
+        slicer = self.slicers[(i, k)]
 
-        while index:
-            while counters[index] < self.n:
-                if counters[index] in counters[:index]:
-                    counters[index] += 1
-                    continue
-
-                if index < k:
-                    index += 1
-                else:
-                    index_slice = np.ones(self.n, dtype=bool)
-                    index_slice[counters] = False
-                    total += np.prod(y - self.x[index_slice])
-                    counters[index] += 1
-
-            counters[index] = 0
-            index -= 1
-            counters[index] += 1
-
-        return total / self._denominator(i)
+        u = np.tile(self.x, (len(slicer), 1))
+        return np.sum(
+            np.prod(
+                y - u[slicer].reshape((len(slicer), self.n - k - 1)), axis=1
+            )
+        ) / self._denominator(i)
 
     def _denominator(self, i):
         index_slice = np.ones(self.n, dtype=bool)
         index_slice[i] = False
         return np.prod(self.x[i] - self.x[index_slice])
+
+    def _build_slicer(self, i, k):
+        slicer = np.array(
+            list(
+                multiset_permutations(
+                    list(range(2, k + 2)) + [1] * (self.n - k - 1)
+                )
+            )
+        )
+        slicer[slicer > 1] = 0
+        slicer = np.insert(slicer, i, 0, axis=1)
+        self.slicers[(i, k)] = slicer.astype(bool)
 
 
 class Interpolant:
