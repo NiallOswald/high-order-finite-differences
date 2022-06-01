@@ -326,17 +326,26 @@ class Interpolation:
 
         return i
 
+    def _spacing(self, p, u):
+        return np.concatenate(
+            [np.zeros(p.s), u, np.zeros(self.n - self.q - p.s)]
+        )
+
     def __call__(self, y):
-        return self.inter[self._find_domain(y)](y)
+        p = self.inter[self._find_domain(y)]
+        return self._spacing(p, p(y))
 
     def derivative(self, y):
-        return self.inter[self._find_domain(y)].derivative(y)
+        p = self.inter[self._find_domain(y)]
+        return self._spacing(p, p.derivative(y))
 
     def second_derivative(self, y):
-        return self.inter[self._find_domain(y)].second_derivative(y)
+        p = self.inter[self._find_domain(y)]
+        return self._spacing(p, p.second_derivative(y))
 
     def nderivative(self, y, k):
-        return self.inter[self._find_domain(y)].nderivative(y, k)
+        p = self.inter[self._find_domain(y)]
+        return self._spacing(p, p.nderivative(y, k))
 
 
 def newton_raphson(x, f, df, tol=1e-8):
