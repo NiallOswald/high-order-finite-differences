@@ -24,46 +24,6 @@ class Lagrange:
             ]
         )
 
-    def derivative(self, y, i):
-        return np.sum(
-            [
-                np.prod(
-                    [
-                        y - self.x[j]
-                        for j in range(len(self.x))
-                        if j != i and j != k
-                    ]
-                )
-                for k in range(len(self.x))
-                if k != i
-            ]
-        ) / np.prod(
-            [self.x[i] - self.x[j] for j in range(len(self.x)) if j != i]
-        )
-
-    def second_derivative(self, y, i):
-        return np.sum(
-            [
-                np.sum(
-                    [
-                        np.prod(
-                            [
-                                y - self.x[j]
-                                for j in range(len(self.x))
-                                if j != i and j != k and j != l
-                            ]
-                        )
-                        for l in range(len(self.x))
-                        if l != i and l != k
-                    ]
-                )
-                for k in range(len(self.x))
-                if k != i
-            ]
-        ) / np.prod(
-            [self.x[i] - self.x[j] for j in range(len(self.x)) if j != i]
-        )
-
     def nderivative(self, y, i, k):
         n = len(self.x)
         counters = [i] + [0 for _ in range(k)]
@@ -107,18 +67,6 @@ class Interpolant:
 
     def __call__(self, y):
         return np.array([self.inter(y, i) for i in range(self.q + 1)])
-
-    def derivative(self, y):
-        """Return the derivative of the interpolant at y."""
-        return np.array(
-            [self.inter.derivative(y, i) for i in range(self.q + 1)]
-        )
-
-    def second_derivative(self, y):
-        """Return the second derivative of the interpolant at y."""
-        return np.array(
-            [self.inter.second_derivative(y, i) for i in range(self.q + 1)]
-        )
 
     def nderivative(self, y, k):
         """Return the kth derivative of the interpolant at y."""
@@ -334,14 +282,6 @@ class Interpolation:
     def __call__(self, y):
         p = self.inter[self._find_domain(y)]
         return self._spacing(p, p(y))
-
-    def derivative(self, y):
-        p = self.inter[self._find_domain(y)]
-        return self._spacing(p, p.derivative(y))
-
-    def second_derivative(self, y):
-        p = self.inter[self._find_domain(y)]
-        return self._spacing(p, p.second_derivative(y))
 
     def nderivative(self, y, k):
         p = self.inter[self._find_domain(y)]
