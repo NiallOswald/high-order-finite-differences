@@ -106,37 +106,45 @@ class PolyFactor:
         self.q = q
         self.n = len(x) - 1
 
-        self.first_slicer = self._first_slicer(self.q + 1)
-        self.second_slicer = self._second_slicer(self.q + 1)
+        self.slicers = {}
 
     def __call__(self, y, i):
         s = self._find_s(i)
         return np.prod([y - self.x[s + k] for k in range(self.q + 1)])
 
     def derivative(self, y, i):
-        s = self._find_s(i)
-        u = np.tile(self.x[s : s + self.q + 1], (self.q + 1, 1))
-        return np.sum(
-            np.prod(
-                y - u[self.first_slicer].reshape((self.q + 1, self.q)), axis=1
-            )
-        )
+        return self.nderivative(y, i, 1)
 
     def second_derivative(self, y, i):
+        return self.nderivative(y, i, 2)
+
+    def nderivative(self, y, i, k):
         s = self._find_s(i)
-        u = np.tile(self.x[s : s + self.q + 1], (self.q * (self.q + 1), 1))
+
+        if k not in self.slicers:
+            self._build_slicer(k)
+        slicer = self.slicers[k]
+
+        u = np.tile(self.x[s : s + self.q + 1], (len(slicer), 1))
         return np.sum(
             np.prod(
-                y
-                - u[self.second_slicer].reshape(
-                    (self.q * (self.q + 1), self.q - 1)
-                ),
-                axis=1,
+                y - u[slicer].reshape((len(slicer), self.q - k + 1)), axis=1
             )
         )
 
     def __len__(self):
         return self.n + 1
+
+    def _build_slicer(self, k):
+        slicer = np.array(
+            list(
+                multiset_permutations(
+                    list(range(2, k + 2)) + [1] * (self.q - k + 1)
+                )
+            )
+        )
+        slicer[slicer > 1] = 0
+        self.slicers[k] = slicer.astype(bool)
 
     def _find_s(self, i):
         if i == -1:  # Bit of a bodge, should fix
@@ -148,25 +156,6 @@ class PolyFactor:
             return i - self.q // 2
         else:
             return self.n - self.q
-
-    @staticmethod
-    def _first_slicer(n):
-        index_slice = np.ones((n, n), dtype=int) - np.eye(n, dtype=bool)
-
-        return index_slice.astype(bool)
-
-    @staticmethod
-    def _second_slicer(n):
-        index_slice = np.ones((n, n, n), dtype=int)
-        slicer = np.tile(np.eye(n, dtype=bool), (n, 1, 1))
-        index_slice -= slicer
-        index_slice -= np.transpose(slicer, axes=(1, 0, 2))
-        index_slice = index_slice.reshape((n * n, n))
-        invalid = np.arange(n)
-        invalid += invalid * n
-        index_slice = np.delete(index_slice, invalid, axis=0)
-
-        return index_slice.astype(bool)
 
 
 class Interpolation:
