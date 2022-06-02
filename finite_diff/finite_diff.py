@@ -170,9 +170,11 @@ class PolyFactor:
 class Interpolation:
     """A final interpolation of the unknown function at x."""
 
-    def __init__(self, n, q, tol=None, max_iter=2500):
+    def __init__(self, n, q, boundary=(-1, 1), tol=None, max_iter=2500):
         self.n = n
         self.q = q
+        self.a = boundary[0]
+        self.b = boundary[1]
         self.endpoints, self.inter = self._find_endpoints(tol, max_iter)
 
     def __getitem__(self, i):
@@ -189,7 +191,7 @@ class Interpolation:
         return self._spacing(p, p.nderivative(y, k))
 
     def _find_endpoints(self, tol, max_iter):
-        endpoints = np.linspace(-1, 1, self.n + 2)
+        endpoints = np.linspace(self.a, self.b, self.n + 2)
         factors = PolyFactor(endpoints[1:-1], self.q - 1)
         extrema = self._find_extrema(endpoints[1:], factors)
 
@@ -226,13 +228,13 @@ class Interpolation:
                         2 * h
                     )
 
-            if abs(factors(-1, 0)) > abs(factors(extrema[0], 0)):
-                endpoints[1] -= (endpoints[1] + 1) / (2 * h)
+            if abs(factors(self.a, 0)) > abs(factors(extrema[0], 0)):
+                endpoints[1] -= (endpoints[1] - self.a) / (2 * h)
             else:
                 endpoints[1] += (extrema[0] - endpoints[1]) / (2 * h)
 
-            if abs(factors(1, -1)) < abs(factors(extrema[-1], -1)):
-                endpoints[-2] -= (1 - endpoints[-2]) / (2 * h)
+            if abs(factors(self.b, -1)) < abs(factors(extrema[-1], -1)):
+                endpoints[-2] -= (self.b - endpoints[-2]) / (2 * h)
             else:
                 endpoints[-2] += (endpoints[-1] - endpoints[-2]) / (2 * h)
 
@@ -246,7 +248,9 @@ class Interpolation:
 
         print("Interpolation complete!")
 
-        return endpoints, Stencil(np.concatenate(([-1], extrema, [1])), self.q)
+        return endpoints, Stencil(
+            np.concatenate(([self.a], extrema, [self.b])), self.q
+        )
 
     def _find_extrema(self, endpoints, poly_factors):
         return np.array(
@@ -271,8 +275,8 @@ class Interpolation:
                 )
                 for i in range(len(extrema) - 1)
             )
-            + abs(abs(factors(-1, 0)) - abs(factors(extrema[0], 0)))
-            + abs(abs(factors(extrema[-1], -1)) - abs(factors(1, -1)))
+            + abs(abs(factors(self.a, 0)) - abs(factors(extrema[0], 0)))
+            + abs(abs(factors(extrema[-1], -1)) - abs(factors(self.b, -1)))
         )
 
     def _find_domain(self, y):
