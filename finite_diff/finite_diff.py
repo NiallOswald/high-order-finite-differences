@@ -170,7 +170,7 @@ class PolyFactor:
 class Interpolation:
     """A final interpolation of the unknown function at x."""
 
-    def __init__(self, n, q, tol=1e-6, max_iter=2500):
+    def __init__(self, n, q, tol=None, max_iter=2500):
         self.n = n
         self.q = q
         self.endpoints, self.inter = self._find_endpoints(tol, max_iter)
@@ -193,13 +193,22 @@ class Interpolation:
         factors = PolyFactor(endpoints[1:-1], self.q - 1)
         extrema = self._find_extrema(endpoints[1:], factors)
 
+        if tol is None:
+
+            def _bound_sense(val, k):
+                return k <= max_iter
+
+        else:
+
+            def _bound_sense(val, k):
+                return val > tol
+
         k = 1
 
-        while self._extrema_diff(factors, extrema) > tol:
+        while _bound_sense(self._extrema_diff(factors, extrema), k):
             if k % 100 == 0:
                 print(f"Iteration {k}:")
                 print(self._extrema_diff(factors, extrema))
-                print(endpoints)
 
             h = k
 
@@ -229,10 +238,11 @@ class Interpolation:
 
             factors = PolyFactor(endpoints[1:-1], self.q - 1)
             extrema = self._find_extrema(endpoints[1:], factors)
-            k += 1
 
             if k > max_iter:
                 raise RuntimeError("Endpoints do not converge.")
+
+            k += 1
 
         print("Interpolation complete!")
 
