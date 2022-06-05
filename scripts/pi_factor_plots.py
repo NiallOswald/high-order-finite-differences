@@ -7,7 +7,7 @@ y = np.linspace(-1, 1, 11)
 x = [np.linspace(s, e, 101) for s, e in zip(y[:-1], y[1:])]
 
 p = PolyFactor(y, 10)
-u = [abs(np.vectorize(f)(z)) for f, z in zip(p, x)]
+u = [abs(np.vectorize(p, excluded=["i"])(x[i], i)) for i in range(len(x))]
 
 for a, b in zip(x, u):
     plt.plot(a, b, color="black")
