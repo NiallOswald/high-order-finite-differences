@@ -81,26 +81,24 @@ class Stencil:
     def __init__(self, x, q):
         self.x = x
         self.q = q
-        self._build_stencil()
+        self.n = len(x) - 1
 
     def __len__(self):
-        return len(self.stencil)
+        return self.n
 
     def __getitem__(self, i):
-        return self.stencil[i]
+        return Interpolant(self.x, self.q, self._find_s(i))
 
-    def __iter__(self):
-        return iter(self.stencil)
+    def _find_s(self, i):
+        if i == -1:  # Bit of a bodge, should fix
+            return self.n - self.q
 
-    def _build_stencil(self):
-        n = len(self.x) - 1
-        s = 0
-        self.stencil = []
-        for i in range(n + 1):
-            if i > self.q // 2 and s < n - self.q:
-                s += 1
-
-            self.stencil.append(Interpolant(self.x, self.q, s))
+        if i < self.q // 2:
+            return 0
+        elif i >= self.q // 2 and i < self.n - self.q // 2:
+            return i - self.q // 2
+        else:
+            return self.n - self.q
 
 
 class PolyFactor:
