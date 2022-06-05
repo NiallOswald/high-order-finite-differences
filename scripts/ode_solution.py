@@ -53,6 +53,8 @@ L[0, :] = np.eye(n + 1)[0, :]
 L[n, :] = np.eye(n + 1)[n, :]
 u = np.linalg.solve(L, b)
 
+plt.xlabel("$x$")
+plt.ylabel("$u(x)$")
 plt.plot(x, u, c="black")
 plt.show()
 
@@ -75,6 +77,8 @@ L[0, :] = np.eye(n + 1)[0, :]
 L[n, :] = np.eye(n + 1)[n, :]
 u = np.linalg.solve(L, b)
 
+plt.xlabel("$x$")
+plt.ylabel("$u(x)$")
 plt.plot(x, u, c="black")
 plt.show()
 
