@@ -170,7 +170,7 @@ class PolyFactor:
 class Interpolation:
     """A final interpolation of the unknown function at x."""
 
-    def __init__(self, n, q, boundary=(-1, 1), tol=None, max_iter=2500):
+    def __init__(self, n, q, boundary=(-1, 1), tol=None, max_iter=50):
         self.n = n
         self.q = q
         self.a = boundary[0]
@@ -208,35 +208,34 @@ class Interpolation:
         k = 1
 
         while _bound_sense(self._extrema_diff(factors, extrema), k):
-            if k % 100 == 0:
+            if k % 10 == 0:
                 print(f"Iteration {k}:")
                 print(self._extrema_diff(factors, extrema))
 
-            h = k
-
             for i in range(len(extrema) - 1):
-                if i == len(factors) - 2:
-                    continue
-                if abs(factors(extrema[i], i)) > abs(
+                error = abs(factors(extrema[i], i)) - abs(
                     factors(extrema[i + 1], i + 1)
-                ):
-                    endpoints[i + 2] -= (endpoints[i + 2] - extrema[i]) / (
-                        2 * h
+                )
+                if error > 0:
+                    endpoints[i + 2] -= (
+                        (endpoints[i + 2] - extrema[i]) * error * k
                     )
                 else:
-                    endpoints[i + 2] += (extrema[i + 1] - endpoints[i + 2]) / (
-                        2 * h
+                    endpoints[i + 2] -= (
+                        (extrema[i + 1] - endpoints[i + 2]) * error * k
                     )
 
-            if abs(factors(self.a, 0)) > abs(factors(extrema[0], 0)):
-                endpoints[1] -= (endpoints[1] - self.a) / (2 * h)
+            error = abs(factors(self.a, 0)) - abs(factors(extrema[0], 0))
+            if error > 0:
+                endpoints[1] -= (endpoints[1] - self.a) * error * k
             else:
-                endpoints[1] += (extrema[0] - endpoints[1]) / (2 * h)
+                endpoints[1] -= (extrema[0] - endpoints[1]) * error * k
 
-            if abs(factors(self.b, -1)) < abs(factors(extrema[-1], -1)):
-                endpoints[-2] -= (self.b - endpoints[-2]) / (2 * h)
+            error = abs(factors(extrema[-1], -1)) - abs(factors(self.b, -1))
+            if error > 0:
+                endpoints[-2] -= (self.b - endpoints[-2]) * error * k
             else:
-                endpoints[-2] += (endpoints[-1] - endpoints[-2]) / (2 * h)
+                endpoints[-2] -= (endpoints[-1] - endpoints[-2]) * error * k
 
             factors = PolyFactor(endpoints[1:-1], self.q - 1)
             extrema = self._find_extrema(endpoints[1:], factors)
