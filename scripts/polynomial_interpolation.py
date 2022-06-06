@@ -2,10 +2,13 @@ from finite_diff.finite_diff import Interpolation
 import numpy as np
 import matplotlib.pyplot as plt
 
-p = Interpolation(12, 12)
-u = p.inter.x**4
+a = 0
+b = 1
+boundary = (a, b)
+x = np.linspace(a, b, 2001)
 
-x = np.linspace(-1, 1, 2001)
+p = Interpolation(12, 12, boundary=boundary)
+u = p.inter.x**4
 
 
 def f(x):
