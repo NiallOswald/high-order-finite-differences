@@ -84,9 +84,11 @@ class Stencil:
         self.n = len(x) - 1
 
     def __len__(self):
-        return self.n
+        return self.n + 1
 
     def __getitem__(self, i):
+        if i > self.n:
+            raise IndexError("Index out of bounds.")
         return Interpolant(self.x, self.q, self._find_s(i))
 
     def _find_s(self, i):
