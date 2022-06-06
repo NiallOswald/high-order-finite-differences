@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 n = 10
-q = 10
+q = 6
 
-non_unif = Interpolation(n, q)
+non_unif = Interpolation(n, q, max_iter=910)
 x = np.linspace(-1, 1, n + 1)
 unif = Lagrange(x)
 
