@@ -2,8 +2,11 @@ from finite_diff.finite_diff import Stencil
 import numpy as np
 import matplotlib.pyplot as plt
 
-n = 500
-q = 12
+EIGENVALUES = False
+FIXED_EPSILON = False
+
+n = 1000
+q = 4
 
 x = np.linspace(0, 1, n + 1)
 inter = Stencil(x, q)
@@ -40,7 +43,7 @@ print("Second derivatives complete!")
 
 print("Plotting...")
 k = 10
-eps = np.linspace(1e-4, 1e-3, k)
+eps = [10 ** (-i) for i in np.sqrt(np.linspace(1, 3**2, k))]
 colour_grid = np.linspace(1, -1, k)
 
 cmap = plt.get_cmap("viridis")
@@ -58,51 +61,57 @@ plt.xlabel("$x$")
 plt.ylabel("$u(x)$")
 plt.show()
 
-# Plot for specific epsilon
-print("Plotting for eps = 1e-4...")
-e = 1e-4
+
+# Plots for specific epsilon
+e1 = 1e-3
+e2 = 1e-4
 
 # Solution plot
-L = e * B + A
-L[0, :] = np.eye(n + 1)[0, :]
-L[n, :] = np.eye(n + 1)[n, :]
-u = np.linalg.solve(L, b)
+if FIXED_EPSILON:
+    print(f"Plotting for eps = {e1}...")
 
-plt.xlabel("$x$")
-plt.ylabel("$u(x)$")
-plt.plot(x, u, c="black")
-plt.show()
+    L1 = e1 * B + A
+    L1[0, :] = np.eye(n + 1)[0, :]
+    L1[n, :] = np.eye(n + 1)[n, :]
+    u = np.linalg.solve(L1, b)
 
-# Eigenvalues plot
-print("Computing eigenvalues...")
-eigs = np.linalg.eigvals(e * B + A)
-print("Eigenvalues complete!")
+    plt.xlabel("$x$")
+    plt.ylabel("$u(x)$")
+    plt.plot(x, u, c="black")
+    plt.show()
 
-plt.plot(eigs.real, eigs.imag, ".", c="k")
-plt.xlabel("$Re(\\lambda)$")
-plt.ylabel("$Im(\\lambda)$")
-plt.show()
+    print(f"Plotting for eps = {e2}...")
 
-print("Plotting for eps = 1e-3...")
-e = 1e-3
+    L2 = e2 * B + A
+    L2[0, :] = np.eye(n + 1)[0, :]
+    L2[n, :] = np.eye(n + 1)[n, :]
+    u = np.linalg.solve(L2, b)
 
-# Solution plot
-L = e * B + A
-L[0, :] = np.eye(n + 1)[0, :]
-L[n, :] = np.eye(n + 1)[n, :]
-u = np.linalg.solve(L, b)
-
-plt.xlabel("$x$")
-plt.ylabel("$u(x)$")
-plt.plot(x, u, c="black")
-plt.show()
+    plt.xlabel("$x$")
+    plt.ylabel("$u(x)$")
+    plt.plot(x, u, c="black")
+    plt.show()
 
 # Eigenvalues plot
-print("Computing eigenvalues...")
-eigs = np.linalg.eigvals(e * B + A)
-print("Eigenvalues complete!")
+if EIGENVALUES:
+    print(f"Plotting for eps = {e1}...")
 
-plt.plot(eigs.real, eigs.imag, ".", c="k")
-plt.xlabel("$Re(\\lambda)$")
-plt.ylabel("$Im(\\lambda)$")
-plt.show()
+    print("Computing eigenvalues...")
+    eigs = np.linalg.eigvals(e1 * B + A)
+    print("Eigenvalues complete!")
+
+    plt.plot(eigs.real, eigs.imag, ".", c="k")
+    plt.xlabel("$Re(\\lambda)$")
+    plt.ylabel("$Im(\\lambda)$")
+    plt.show()
+
+    print(f"Plotting for eps = {e2}...")
+
+    print("Computing eigenvalues...")
+    eigs = np.linalg.eigvals(e2 * B + A)
+    print("Eigenvalues complete!")
+
+    plt.plot(eigs.real, eigs.imag, ".", c="k")
+    plt.xlabel("$Re(\\lambda)$")
+    plt.ylabel("$Im(\\lambda)$")
+    plt.show()
