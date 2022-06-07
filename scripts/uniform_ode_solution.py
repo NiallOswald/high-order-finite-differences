@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 EIGENVALUES = False
-FIXED_EPSILON = False
+FIXED_EPSILON = True
 
-n = 1000
+n = 500
 q = 4
 
 x = np.linspace(0, 1, n + 1)
@@ -15,40 +15,20 @@ b = 1 + 2 * x
 b[0] = 0
 b[n] = 1
 
-
-def get_s(i):
-    if i == -1:  # Bit of a bodge, should fix
-        return n - q
-    if i < q // 2:
-        return 0
-    elif i >= q // 2 and i < n - q // 2:
-        return i - q // 2
-    else:
-        return n - q
-
-
-def spacing(s, u):
-    return np.concatenate([np.zeros(s), u, np.zeros(n - q - s)])
-
-
 print("Computing derivatives...")
-A = np.array(
-    [spacing(get_s(i), inter[i].nderivative(u, 1)) for i, u in enumerate(x)]
-)
+A = np.array([inter.nderivative(u, i, 1) for i, u in enumerate(x)])
 print("First derivatives complete!")
-B = np.array(
-    [spacing(get_s(i), inter[i].nderivative(u, 2)) for i, u in enumerate(x)]
-)
+B = np.array([inter.nderivative(u, i, 2) for i, u in enumerate(x)])
 print("Second derivatives complete!")
 
 print("Plotting...")
 k = 10
-eps = [10 ** (-i) for i in np.sqrt(np.linspace(1, 3**2, k))]
+eps = [10 ** (-i) for i in np.sqrt(np.linspace(3**2, 5**2, k))]
 colour_grid = np.linspace(1, -1, k)
 
 cmap = plt.get_cmap("viridis")
 
-for e, i in zip(eps, colour_grid):
+for e, i in zip(reversed(eps), colour_grid):
     L = e * B + A
     L[0, :] = np.eye(n + 1)[0, :]
     L[n, :] = np.eye(n + 1)[n, :]
@@ -64,7 +44,7 @@ plt.show()
 
 # Plots for specific epsilon
 e1 = 1e-3
-e2 = 1e-4
+e2 = 1e-5
 
 # Solution plot
 if FIXED_EPSILON:
