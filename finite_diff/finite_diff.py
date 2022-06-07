@@ -194,7 +194,7 @@ class Interpolation:
     def _find_endpoints(self, tol, max_iter):
         endpoints = np.linspace(self.a, self.b, self.n + 2)
         factors = PolyFactor(endpoints[1:-1], self.q - 1)
-        extrema = self._find_extrema(endpoints[1:-1], factors)
+        extrema = self._find_extrema(factors, endpoints[1:-1])
 
         if tol is None:
 
@@ -239,7 +239,7 @@ class Interpolation:
                 endpoints[-2] -= (endpoints[-1] - endpoints[-2]) * error * k
 
             factors = PolyFactor(endpoints[1:-1], self.q - 1)
-            extrema = self._find_extrema(endpoints[1:-1], factors)
+            extrema = self._find_extrema(factors, endpoints[1:-1])
 
             if k > max_iter:
                 raise RuntimeError("Endpoints do not converge.")
@@ -252,13 +252,13 @@ class Interpolation:
             np.concatenate(([self.a], extrema, [self.b])), self.q
         )
 
-    def _find_extrema(self, endpoints, poly_factors):
+    def _find_extrema(self, factors, endpoints):
         return np.array(
             [
                 newton_raphson(
                     (endpoints[i] + endpoints[i + 1]) / 2,
-                    poly_factors.derivative,
-                    poly_factors.second_derivative,
+                    factors.derivative,
+                    factors.second_derivative,
                     i=i,
                 )
                 for i in range(len(endpoints) - 1)
