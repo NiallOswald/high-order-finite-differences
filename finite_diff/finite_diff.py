@@ -209,14 +209,14 @@ class Interpolation:
         k = 1
 
         while _bound_sense(self._extrema_diff(factors, extrema), k):
+            diff = self._extrema_diff(factors, extrema)
+
             if k % 100 == 0:
                 print(f"Iteration {k}:")
-                print(self._extrema_diff(factors, extrema))
+                print(np.sum(abs(diff)))
 
             for i in range(len(extrema) - 1):
-                error = abs(factors(extrema[i], i)) - abs(
-                    factors(extrema[i + 1], i + 1)
-                )
+                error = diff[i + 1]
                 if error > 0:
                     endpoints[i + 2] -= (
                         (endpoints[i + 2] - extrema[i]) * error * k
@@ -226,13 +226,13 @@ class Interpolation:
                         (extrema[i + 1] - endpoints[i + 2]) * error * k
                     )
 
-            error = abs(factors(self.a, 0)) - abs(factors(extrema[0], 0))
+            error = diff[0]
             if error > 0:
                 endpoints[1] -= (endpoints[1] - self.a) * error * k
             else:
                 endpoints[1] -= (extrema[0] - endpoints[1]) * error * k
 
-            error = abs(factors(extrema[-1], -1)) - abs(factors(self.b, -1))
+            error = diff[-1]
             if error > 0:
                 endpoints[-2] -= (self.b - endpoints[-2]) * error * k
             else:
@@ -266,17 +266,16 @@ class Interpolation:
         )
 
     def _extrema_diff(self, factors, extrema):
-        """Find the sum of the adjacent extrema differences."""
-        return (
-            sum(
-                abs(
+        return np.concatenate(
+            [
+                [abs(factors(self.a, 0)) - abs(factors(extrema[0], 0))],
+                [
                     abs(factors(extrema[i], i))
                     - abs(factors(extrema[i + 1], i + 1))
-                )
-                for i in range(len(extrema) - 1)
-            )
-            + abs(abs(factors(self.a, 0)) - abs(factors(extrema[0], 0)))
-            + abs(abs(factors(extrema[-1], -1)) - abs(factors(self.b, -1)))
+                    for i in range(len(extrema) - 1)
+                ],
+                [abs(factors(extrema[-1], -1)) - abs(factors(self.b, -1))],
+            ]
         )
 
     def _find_domain(self, y):
