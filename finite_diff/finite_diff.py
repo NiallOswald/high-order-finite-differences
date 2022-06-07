@@ -209,7 +209,7 @@ class Interpolation:
         k = 1
 
         while _bound_sense(self._extrema_diff(factors, extrema), k):
-            if k % 10 == 0:
+            if k % 100 == 0:
                 print(f"Iteration {k}:")
                 print(self._extrema_diff(factors, extrema))
 
