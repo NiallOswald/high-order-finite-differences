@@ -295,11 +295,15 @@ class Interpolation:
         )
 
 
-def newton_raphson(x, f, df, tol=1e-8, **kwargs):
+def newton_raphson(x, f, df, tol=1e-8, max_iter=1e4, **kwargs):
     """Find the root of f(x) = 0 using Newton-Raphson."""
     x0 = x
-    while True:
+    k = 0
+    while k < max_iter:
         x1 = x0 - f(x0, **kwargs) / df(x0, **kwargs)
         if abs(x1 - x0) < tol:
             return x1
         x0 = x1
+        k += 1
+
+    raise RuntimeError("Newton-Raphson did not converge.")
