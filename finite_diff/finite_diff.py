@@ -91,6 +91,16 @@ class Stencil:
             raise IndexError("Index out of bounds.")
         return Interpolant(self.x, self.q, self._find_s(i))
 
+    def __call__(self, y, i):
+        """Evaluate the stencil at y."""
+        p = self[i]
+        return self._spacing(p, p(y))
+
+    def nderivative(self, y, i, k):
+        """Evaluate the kth derivative of the stencil at y."""
+        p = self[i]
+        return self._spacing(p, p.nderivative(y, k))
+
     def _find_s(self, i):
         if i == -1:  # Bit of a bodge, should fix
             return self.n - self.q
@@ -101,6 +111,11 @@ class Stencil:
             return i - self.q // 2
         else:
             return self.n - self.q
+
+    def _spacing(self, p, u):
+        return np.concatenate(
+            [np.zeros(p.s), u, np.zeros(self.n - self.q - p.s)]
+        )
 
 
 class PolyFactor:
@@ -247,6 +262,7 @@ class Interpolation:
             k += 1
 
         print("Interpolation complete!")
+        print(f"Error after {k} iterations: {np.sum(abs(diff))}")
 
         return endpoints, Stencil(
             np.concatenate(([self.a], extrema, [self.b])), self.q
