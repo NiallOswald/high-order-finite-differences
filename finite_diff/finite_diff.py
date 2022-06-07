@@ -158,13 +158,14 @@ class PolyFactor:
     def _find_s(self, i):
         if i == -1:  # Bit of a bodge, should fix
             return self.n - self.q
-
-        if i < self.q // 2:
+        elif i < self.q // 2:
             return 0
         elif i >= self.q // 2 and i < self.n - self.q // 2:
             return i - self.q // 2
-        else:
+        elif i <= self.n:
             return self.n - self.q
+        else:
+            raise IndexError("Index out of bounds.")
 
 
 class Interpolation:
