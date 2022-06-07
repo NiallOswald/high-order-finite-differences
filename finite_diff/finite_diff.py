@@ -266,16 +266,18 @@ class Interpolation:
         )
 
     def _extrema_diff(self, factors, extrema):
-        return np.concatenate(
-            [
-                [abs(factors(self.a, 0)) - abs(factors(extrema[0], 0))],
+        vals = self._extrema_vals(factors, extrema)
+        return vals[:-1] - vals[1:]
+
+    def _extrema_vals(self, factors, extrema):
+        return abs(
+            np.concatenate(
                 [
-                    abs(factors(extrema[i], i))
-                    - abs(factors(extrema[i + 1], i + 1))
-                    for i in range(len(extrema) - 1)
-                ],
-                [abs(factors(extrema[-1], -1)) - abs(factors(self.b, -1))],
-            ]
+                    [factors(self.a, 0)],
+                    [factors(extrema[i], i) for i in range(len(extrema))],
+                    [factors(self.b, -1)],
+                ]
+            )
         )
 
     def _find_domain(self, y):
