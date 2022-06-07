@@ -8,7 +8,7 @@ FIXED_EPSILON = False
 n = 1000
 q = 4
 
-inter = Interpolation(n, q, boundary=(0, 1), max_iter=21)
+inter = Interpolation(n, q, boundary=(0, 1), max_iter=40)
 x = inter.inter.x
 print(x)
 
@@ -25,11 +25,11 @@ print("Second derivatives complete!")
 print("Plotting...")
 k = 10
 eps = [10 ** (-i) for i in np.sqrt(np.linspace(1, 3**2, k))]
-colour_grid = np.linspace(1, -1, k)
+colour_grid = np.linspace(1, 0, k)
 
 cmap = plt.get_cmap("viridis")
 
-for e, i in zip(eps, colour_grid):
+for e, i in zip(reversed(eps), colour_grid):
     L = e * B + A
     L[0, :] = np.eye(n + 1)[0, :]
     L[n, :] = np.eye(n + 1)[n, :]
@@ -40,11 +40,13 @@ for e, i in zip(eps, colour_grid):
 
 plt.xlabel("$x$")
 plt.ylabel("$u(x)$")
+# plt.xlim([-0.01, 0.11])
+# plt.ylim([-1.35, -0.55])
 plt.show()
 
 # Plot for specific epsilon
-e1 = 1e-3
-e2 = 1e-4
+e1 = 1e-4
+e2 = 1e-5
 
 # Solution plot
 if FIXED_EPSILON:
