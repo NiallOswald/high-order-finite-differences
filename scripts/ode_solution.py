@@ -1,9 +1,11 @@
+"""Plot the solution to the ODE problem for various values of epsilon."""
+
 from finite_diff.finite_diff import Interpolation
 import numpy as np
 import matplotlib.pyplot as plt
 
-EIGENVALUES = False
-FIXED_EPSILON = False
+EIGENVALUES = False  # Plot the spectrum of the operators
+FIXED_EPSILON = False  # Generate plots for a fixed epsilon
 
 n = 1000
 q = 4

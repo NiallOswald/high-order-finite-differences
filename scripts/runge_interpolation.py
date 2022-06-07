@@ -1,3 +1,5 @@
+"""Demonstrate Runge's phenomenon."""
+
 from finite_diff.finite_diff import Interpolation, Lagrange
 import numpy as np
 import matplotlib.pyplot as plt

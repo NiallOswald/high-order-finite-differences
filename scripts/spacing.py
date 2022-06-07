@@ -1,3 +1,5 @@
+"""Script for tuning the step size used in Interpolation."""
+
 from finite_diff.finite_diff import Interpolation, PolyFactor
 import numpy as np
 import matplotlib.pyplot as plt

@@ -1,9 +1,11 @@
+"""Plot the solution to the ODE problem using a uniform grid."""
+
 from finite_diff.finite_diff import Stencil
 import numpy as np
 import matplotlib.pyplot as plt
 
-EIGENVALUES = False
-FIXED_EPSILON = True
+EIGENVALUES = False  # Plot the spectrum of the operators
+FIXED_EPSILON = True  # Generate plots for a fixed epsilon
 
 n = 500
 q = 4

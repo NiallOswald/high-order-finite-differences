@@ -1,3 +1,5 @@
+"""Plot the errors for different grid spacing schemes."""
+
 from finite_diff.finite_diff import Interpolation, Stencil
 import numpy as np
 import matplotlib.pyplot as plt

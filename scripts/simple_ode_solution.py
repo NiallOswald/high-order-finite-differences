@@ -1,4 +1,4 @@
-"""Solve a simple ODE using the high-order finite difference method."""
+"""Plot the solution of a simple ODE problem."""
 
 from finite_diff.finite_diff import Interpolation
 import numpy as np
