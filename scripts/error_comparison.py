@@ -60,12 +60,16 @@ u = (
 u = np.vectorize(u)
 
 plt.plot(x3, u(x3), "k-", label="True Solution")
+plt.xlabel("$x$")
+plt.ylabel("$u(x)$")
 plt.legend()
 plt.show()
 
 # Error comparison
 plt.plot(x1, abs(u1 - u(x1)), "k:", label="Hermanns-Hernández Spacing")
 plt.plot(x2, abs(u2 - u(x2)), "k--", label="Uniform Spacing")
+plt.xlabel("$x$")
+plt.ylabel("Error: $|u(x) - u_i(x)|$")
 plt.yscale("log")
 plt.legend()
 plt.show()
