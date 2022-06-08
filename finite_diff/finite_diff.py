@@ -214,7 +214,7 @@ class Interpolation:
         if tol is None:
 
             def _bound_sense(val, k):
-                return k <= max_iter
+                return k < max_iter
 
         else:
 
