@@ -285,7 +285,8 @@ class Interpolation:
         print("Interpolation complete!")
         vals = self._extrema_vals(factors, extrema)
         print(
-            f"Relative error after {k} iterations: {(max(vals) - min(vals))/max(vals)}"
+            f"Relative error after {k} iterations: "
+            f"{(max(vals) - min(vals))/max(vals)}"
         )
         print(f"Left indicator: {self.l_indicator}")
         print(f"Right indicator: {self.r_indicator}")
