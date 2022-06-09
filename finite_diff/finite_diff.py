@@ -237,7 +237,7 @@ class Interpolation:
             if k % 100 == 0:
                 print(f"Iteration {k}:")
                 vals = self._extrema_vals(factors, extrema)
-                print(f"Error: {2*(max(vals) - min(vals))}")
+                print(f"Error: {max(vals) - min(vals)}")
 
             for i in range(1, len(extrema)):
                 error = diff[i]
@@ -305,18 +305,16 @@ class Interpolation:
         )
 
     def _extrema_diff(self, factors, extrema):
-        vals = self._extrema_vals(factors, extrema)
+        vals = abs(self._extrema_vals(factors, extrema))
         return vals[:-1] - vals[1:]
 
     def _extrema_vals(self, factors, extrema):
-        return abs(
-            np.concatenate(
-                [
-                    [factors(self.a, 0)],
-                    [factors(extrema[i], i) for i in range(len(extrema))],
-                    [factors(self.b, -1)],
-                ]
-            )
+        return np.concatenate(
+            [
+                [factors(self.a, 0)],
+                [factors(extrema[i], i) for i in range(len(extrema))],
+                [factors(self.b, -1)],
+            ]
         )
 
     def _find_domain(self, y):
