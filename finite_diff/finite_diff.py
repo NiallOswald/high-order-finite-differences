@@ -186,7 +186,7 @@ class PolyFactor:
 class Interpolation:
     """A final interpolation of the unknown function at x."""
 
-    def __init__(self, n, q, boundary=(-1, 1), tol=None, max_iter=50):
+    def __init__(self, n, q, boundary=(-1, 1), tol=None, max_iter=5000):
         self.n = n
         self.q = q
         self.a = boundary[0]
