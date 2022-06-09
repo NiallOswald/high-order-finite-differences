@@ -217,13 +217,13 @@ class Interpolation:
 
         if tol is None:
 
-            def _bound_sense(val, k):
+            def _bound_sense(vals, k):
                 return k < max_iter
 
         else:
 
-            def _bound_sense(val, k):
-                return val > tol
+            def _bound_sense(vals, k):
+                return max(vals) - min(vals) > tol
 
         k = 1
 
@@ -237,6 +237,7 @@ class Interpolation:
             if k % 100 == 0:
                 print(f"Iteration {k}:")
                 vals = self._extrema_vals(factors, extrema)
+                print(vals)
                 print(f"Error: {max(vals) - min(vals)}")
 
             for i in range(1, len(extrema)):
@@ -283,7 +284,8 @@ class Interpolation:
             k += 1
 
         print("Interpolation complete!")
-        print(f"Error after {k} iterations: {np.sum(abs(diff))}")
+        vals = self._extrema_vals(factors, extrema)
+        print(f"Error after {k} iterations: {max(vals) - min(vals)}")
         print(f"Left indicator: {self.l_indicator}")
         print(f"Right indicator: {self.r_indicator}")
 
@@ -305,16 +307,18 @@ class Interpolation:
         )
 
     def _extrema_diff(self, factors, extrema):
-        vals = abs(self._extrema_vals(factors, extrema))
+        vals = self._extrema_vals(factors, extrema)
         return vals[:-1] - vals[1:]
 
     def _extrema_vals(self, factors, extrema):
-        return np.concatenate(
-            [
-                [factors(self.a, 0)],
-                [factors(extrema[i], i) for i in range(len(extrema))],
-                [factors(self.b, -1)],
-            ]
+        return abs(
+            np.concatenate(
+                [
+                    [factors(self.a, 0)],
+                    [factors(extrema[i], i) for i in range(len(extrema))],
+                    [factors(self.b, -1)],
+                ]
+            )
         )
 
     def _find_domain(self, y):
