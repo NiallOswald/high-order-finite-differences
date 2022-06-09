@@ -191,6 +191,10 @@ class Interpolation:
         self.q = q
         self.a = boundary[0]
         self.b = boundary[1]
+
+        self.l_indicator = 0
+        self.r_indicator = 0
+
         self.endpoints, self.inter = self._find_endpoints(tol, max_iter)
 
     def __getitem__(self, i):
@@ -223,35 +227,52 @@ class Interpolation:
 
         k = 1
 
+        def step(k, error, max_diff):
+            return 1 / (2 * k - 1)
+
         while _bound_sense(self._extrema_diff(factors, extrema), k):
             diff = self._extrema_diff(factors, extrema)
+            max_diff = max(abs(diff))
 
             if k % 100 == 0:
                 print(f"Iteration {k}:")
                 print(np.sum(abs(diff)))
+                print(endpoints[-2])
 
-            for i in range(len(extrema) - 1):
-                error = diff[i + 1]
+            for i in range(1, len(extrema)):
+                error = diff[i]
                 if error > 0:
-                    endpoints[i + 2] -= (
-                        (endpoints[i + 2] - extrema[i]) * error * k
-                    )
+                    endpoints[i + 1] -= (
+                        endpoints[i + 1] - extrema[i - 1]
+                    ) * step(k, error, max_diff)
                 else:
-                    endpoints[i + 2] -= (
-                        (extrema[i + 1] - endpoints[i + 2]) * error * k
+                    endpoints[i + 1] += (extrema[i] - endpoints[i + 1]) * step(
+                        k, error, max_diff
                     )
 
             error = diff[0]
             if error > 0:
-                endpoints[1] -= (endpoints[1] - self.a) * error * k
+                endpoints[1] -= (endpoints[1] - self.a) * step(
+                    k, error, max_diff
+                )
+                self.l_indicator -= 1
             else:
-                endpoints[1] -= (extrema[0] - endpoints[1]) * error * k
+                endpoints[1] += (extrema[0] - endpoints[1]) * step(
+                    k, error, max_diff
+                )
+                self.l_indicator += 1
 
             error = diff[-1]
             if error > 0:
-                endpoints[-2] -= (self.b - endpoints[-2]) * error * k
+                endpoints[-2] -= (endpoints[-2] - extrema[-1]) * step(
+                    k, error, max_diff
+                )
+                self.r_indicator -= 1
             else:
-                endpoints[-2] -= (endpoints[-1] - endpoints[-2]) * error * k
+                endpoints[-2] += (self.b - endpoints[-2]) * step(
+                    k, error, max_diff
+                )
+                self.r_indicator += 1
 
             factors = PolyFactor(endpoints[1:-1], self.q - 1)
             extrema = self._find_extrema(factors, endpoints[1:-1])
@@ -263,6 +284,8 @@ class Interpolation:
 
         print("Interpolation complete!")
         print(f"Error after {k} iterations: {np.sum(abs(diff))}")
+        print(f"Left indicator: {self.l_indicator}")
+        print(f"Right indicator: {self.r_indicator}")
 
         return endpoints, Stencil(
             np.concatenate(([self.a], extrema, [self.b])), self.q
