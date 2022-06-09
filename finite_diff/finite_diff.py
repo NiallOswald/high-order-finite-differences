@@ -236,8 +236,8 @@ class Interpolation:
 
             if k % 100 == 0:
                 print(f"Iteration {k}:")
-                print(np.sum(abs(diff)))
-                print(endpoints[-2])
+                vals = self._extrema_vals(factors, extrema)
+                print(f"Error: {2*(max(vals) - min(vals))}")
 
             for i in range(1, len(extrema)):
                 error = diff[i]
