@@ -237,7 +237,6 @@ class Interpolation:
             if k % 100 == 0:
                 print(f"Iteration {k}:")
                 vals = self._extrema_vals(factors, extrema)
-                print(vals)
                 print(f"Error: {max(vals) - min(vals)}")
 
             for i in range(1, len(extrema)):
