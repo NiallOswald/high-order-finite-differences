@@ -4,16 +4,18 @@ from finite_diff.finite_diff import Interpolation, PolyFactor
 import numpy as np
 import matplotlib.pyplot as plt
 
-n = 500
-iters = [1000]  # , 1000, 1500, 2000, 2500]
+n = 100
+iters = [100, 500, 1000, 2500, 5000]  # , 10000, 25000]
 
 colour_grid = np.linspace(1, 0, len(iters))
 cmap = plt.get_cmap("viridis")
 
 for k, c in zip(iters, colour_grid):
-    p = Interpolation(n, 4, max_iter=k)
+    p = Interpolation(n, 10, max_iter=k)
     x = p.inter.x
     extrema = x[1:-1]
+
+    assert p.r_indicator < k * 0.9
 
     factors = PolyFactor(p.endpoints[1:-1], p.q - 1)
 
@@ -40,8 +42,10 @@ for k, c in zip(iters, colour_grid):
     )
 
     # print(errors)
-    print(maxima)
+    # print(maxima)
 
     plt.plot(np.concatenate([[-1], extrema, [1]]), maxima, c=cmap(c))
 
+plt.xlabel("$x_i$")
+plt.ylabel("$|\\pi(x_i)|$")
 plt.show()
