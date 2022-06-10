@@ -93,11 +93,17 @@ for q, i in zip(q_vals, colour_grid_q):
 plt.xlabel("$x$")
 plt.ylabel("$u(x)$")
 plt.legend()
-plt.title("Eleanor is the best")
 plt.show()
 
 # Error plots
 errors = [abs(u_q[i] - u_true(x_q[i])) for i in range(len(q_vals))]
+for i, j in zip(range(len(q_vals)), colour_grid_q):
+    plt.plot(x_q[i], errors[i], c=cmap(j), label=f"$q = {q_vals[i]}$")
+plt.xlabel("$x$")
+plt.ylabel("Error: $|u(x) - u_i(x)|$")
+plt.legend()
+plt.show()
+
 for i, j in zip(range(len(q_vals)), colour_grid_q):
     plt.plot(x_q[i], errors[i], c=cmap(j), label=f"$q = {q_vals[i]}$")
 plt.xlabel("$x$")
