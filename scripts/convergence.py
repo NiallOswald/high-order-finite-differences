@@ -27,7 +27,7 @@ q = 4
 colour_grid_n = np.linspace(1, 0, len(n_vals))
 
 for n, i in zip(n_vals, colour_grid_n):
-    inter = Interpolation(n, q, boundary=(0, 1), max_iter=500)
+    inter = Interpolation(n, q, boundary=(0, 1), max_iter=5000)
     x = inter.inter.x
     x_n.append(x)
 
@@ -71,7 +71,7 @@ n = 250
 colour_grid_q = np.linspace(1, 0, len(q_vals))
 
 for q, i in zip(q_vals, colour_grid_q):
-    inter = Interpolation(n, q, boundary=(0, 1), max_iter=500)
+    inter = Interpolation(n, q, boundary=(0, 1), max_iter=5000)
     x = inter.inter.x
     x_q.append(x)
 
@@ -93,6 +93,7 @@ for q, i in zip(q_vals, colour_grid_q):
 plt.xlabel("$x$")
 plt.ylabel("$u(x)$")
 plt.legend()
+plt.title("Eleanor is the best")
 plt.show()
 
 # Error plots
@@ -101,6 +102,6 @@ for i, j in zip(range(len(q_vals)), colour_grid_q):
     plt.plot(x_q[i], errors[i], c=cmap(j), label=f"$q = {q_vals[i]}$")
 plt.xlabel("$x$")
 plt.ylabel("Error: $|u(x) - u_i(x)|$")
-# plt.yscale("log")
+plt.yscale("log")
 plt.legend()
 plt.show()
