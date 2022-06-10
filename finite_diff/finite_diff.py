@@ -232,7 +232,7 @@ class Interpolation:
 
         while _bound_sense(self._extrema_diff(factors, extrema), k):
             diff = self._extrema_diff(factors, extrema)
-            max_diff = max(abs(diff))
+            max_diff = None
 
             if k % 100 == 0:
                 print(f"Iteration {k}:")
