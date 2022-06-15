@@ -4,6 +4,8 @@ from finite_diff.finite_diff import Interpolation
 import numpy as np
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({"font.size": 11})
+
 n_vals = [20, 30, 40, 50, 60, 70, 80, 90, 100]
 q_vals = [2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -46,8 +48,8 @@ for n, i in zip(n_vals, colour_grid_n):
 
     plt.plot(x, u, c=cmap(i), label=f"$N = {n}$")
 
-plt.xlabel("$x$")
-plt.ylabel("$u(x)$")
+plt.xlabel("$x$", fontsize=16)
+plt.ylabel("$u(x)$", fontsize=16)
 plt.legend()
 plt.show()
 
@@ -55,8 +57,8 @@ plt.show()
 errors = [abs(u_n[i] - u_true(x_n[i])) for i in range(len(n_vals))]
 for i, j in zip(range(len(n_vals)), colour_grid_n):
     plt.plot(x_n[i], errors[i], c=cmap(j), label=f"$N = {n_vals[i]}$")
-plt.xlabel("$x$")
-plt.ylabel("Error: $|u(x) - u_i(x)|$")
+plt.xlabel("$x$", fontsize=16)
+plt.ylabel("Error: $|u(x) - u_i(x)|$", fontsize=16)
 plt.yscale("log")
 plt.legend()
 plt.show()
@@ -90,8 +92,8 @@ for q, i in zip(q_vals, colour_grid_q):
 
     plt.plot(x, u, c=cmap(i), label=f"$q = {q}$")
 
-plt.xlabel("$x$")
-plt.ylabel("$u(x)$")
+plt.xlabel("$x$", fontsize=16)
+plt.ylabel("$u(x)$", fontsize=16)
 plt.legend()
 plt.show()
 
@@ -99,15 +101,15 @@ plt.show()
 errors = [abs(u_q[i] - u_true(x_q[i])) for i in range(len(q_vals))]
 for i, j in zip(range(len(q_vals)), colour_grid_q):
     plt.plot(x_q[i], errors[i], c=cmap(j), label=f"$q = {q_vals[i]}$")
-plt.xlabel("$x$")
-plt.ylabel("Error: $|u(x) - u_i(x)|$")
+plt.xlabel("$x$", fontsize=16)
+plt.ylabel("Error: $|u(x) - u_i(x)|$", fontsize=16)
 plt.legend()
 plt.show()
 
 for i, j in zip(range(len(q_vals)), colour_grid_q):
     plt.plot(x_q[i], errors[i], c=cmap(j), label=f"$q = {q_vals[i]}$")
-plt.xlabel("$x$")
-plt.ylabel("Error: $|u(x) - u_i(x)|$")
+plt.xlabel("$x$", fontsize=16)
+plt.ylabel("Error: $|u(x) - u_i(x)|$", fontsize=16)
 plt.yscale("log")
 plt.legend()
 plt.show()
