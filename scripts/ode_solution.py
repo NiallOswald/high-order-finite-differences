@@ -4,13 +4,15 @@ from finite_diff.finite_diff import Interpolation
 import numpy as np
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({"font.size": 11})
+
 EIGENVALUES = False  # Plot the spectrum of the operators
 FIXED_EPSILON = False  # Generate plots for a fixed epsilon
 
 n = 1000
-q = 4
+q = 2
 
-inter = Interpolation(n, q, boundary=(0, 1), max_iter=40)
+inter = Interpolation(n, q, boundary=(0, 1), max_iter=5000)
 x = inter.inter.x
 print(x)
 
@@ -26,7 +28,7 @@ print("Second derivatives complete!")
 
 print("Plotting...")
 k = 10
-eps = [10 ** (-i) for i in np.sqrt(np.linspace(1, 3**2, k))]
+eps = [10 ** (-i) for i in np.sqrt(np.linspace(3**2, 5**2, k))]
 colour_grid = np.linspace(1, 0, k)
 
 cmap = plt.get_cmap("viridis")
@@ -40,10 +42,8 @@ for e, i in zip(reversed(eps), colour_grid):
 
     plt.plot(x, u, c=cmap(i))
 
-plt.xlabel("$x$")
-plt.ylabel("$u(x)$")
-# plt.xlim([-0.01, 0.11])
-# plt.ylim([-1.35, -0.55])
+plt.xlabel("$x$", fontsize=16)
+plt.ylabel("$u(x)$", fontsize=16)
 plt.show()
 
 # Plot for specific epsilon
