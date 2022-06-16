@@ -76,7 +76,14 @@ class Interpolant:
 
 
 class Stencil:
-    """A stencil of unbounded interpolants."""
+    """A stencil of general interpolants.
+
+    Parameters
+    ----------
+    x : array_like
+        The grid points.
+    q : int
+        The order of the finite difference stencil."""
 
     def __init__(self, x, q):
         self.x = x
@@ -84,15 +91,17 @@ class Stencil:
         self.n = len(x) - 1
 
     def __len__(self):
+        """Return the number of interpolants."""
         return self.n + 1
 
     def __getitem__(self, i):
+        """Return the L_i(x) function from the non-uniform section."""
         if i > self.n:
             raise IndexError("Index out of bounds.")
         return Interpolant(self.x, self.q, self._find_s(i))
 
     def __call__(self, y, i):
-        """Evaluate the stencil at y."""
+        """Evaluate the stencil at y, returning L_i(y)."""
         p = self[i]
         return self._spacing(p, p(y))
 
@@ -102,6 +111,7 @@ class Stencil:
         return self._spacing(p, p.nderivative(y, k))
 
     def _find_s(self, i):
+        """Find the offset s for the ith interpolant."""
         if i == -1:  # Bit of a bodge, should fix
             return self.n - self.q
 
@@ -113,6 +123,7 @@ class Stencil:
             return self.n - self.q
 
     def _spacing(self, p, u):
+        """Pack the output with zeros to align with the u vector."""
         return np.concatenate(
             [np.zeros(p.s), u, np.zeros(self.n - self.q - p.s)]
         )
@@ -171,7 +182,7 @@ class PolyFactor:
         self.slicers[k] = slicer.astype(bool)
 
     def _find_s(self, i):
-        if i == -1:  # Bit of a bodge, should fix
+        if i == -1:
             return self.n - self.q
         elif i < self.q // 2:
             return 0
@@ -278,7 +289,7 @@ class Interpolation:
             extrema = self._find_extrema(factors, endpoints[1:-1])
 
             if k > max_iter:
-                raise RuntimeError("Endpoints do not converge.")
+                raise ConvergenceError("Endpoints do not converge.")
 
             k += 1
 
@@ -350,4 +361,4 @@ def newton_raphson(x, f, df, tol=1e-8, max_iter=1e4, **kwargs):
         x0 = x1
         k += 1
 
-    raise RuntimeError("Newton-Raphson did not converge.")
+    raise ConvergenceError("Newton-Raphson did not converge.")
