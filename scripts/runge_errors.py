@@ -21,7 +21,7 @@ print(f"Roots: {roots}")
 
 x = np.linspace(-1, 1, 251)
 
-plt.plot(x, g(x))
+plt.plot(x, g(x), c="k")
 plt.xlabel("$x$", fontsize=16)
 plt.ylabel("$\\phi(x) - \\phi(\\pm i/5)$", fontsize=16)
 plt.grid()
