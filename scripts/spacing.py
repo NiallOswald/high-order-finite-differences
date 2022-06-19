@@ -11,7 +11,7 @@ colour_grid = np.linspace(1, 0, len(iters))
 cmap = plt.get_cmap("viridis")
 
 for k, c in zip(iters, colour_grid):
-    p = Interpolation(n, 10, max_iter=k)
+    p = Interpolation(n, 4, max_iter=k)
     x = p.inter.x
     extrema = x[1:-1]
 
@@ -44,8 +44,14 @@ for k, c in zip(iters, colour_grid):
     # print(errors)
     # print(maxima)
 
-    plt.plot(np.concatenate([[-1], extrema, [1]]), maxima, c=cmap(c))
+    plt.plot(
+        np.concatenate([[-1], extrema, [1]]),
+        maxima,
+        c=cmap(c),
+        label=f"k = {k}",
+    )
 
 plt.xlabel("$x_i$")
-plt.ylabel("$|\\pi(x_i)|$")
+plt.ylabel("$|\\pi_i(x_i)|$")
+plt.legend()
 plt.show()

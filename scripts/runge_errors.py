@@ -48,6 +48,6 @@ for n, c in zip(n_vals, colour_grid):
 plt.plot(roots[0], 0, "o", c="red")
 plt.plot(roots[1], 0, "o", c="red")
 plt.xlabel("$x$", fontsize=16)
-plt.ylabel("$f_N(x)$", fontsize=16)
+plt.ylabel("$p_N(x)$", fontsize=16)
 plt.grid()
 plt.show()

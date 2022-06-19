@@ -4,12 +4,14 @@ from finite_diff.finite_diff import Interpolation, Stencil
 import numpy as np
 import matplotlib.pyplot as plt
 
-n = 500
-q = 4
-eps = 1e-2
+plt.rcParams.update({"font.size": 11})
+
+n = 50
+q = 12
+eps = 1e-1
 
 # Non-uniform spacing
-inter = Interpolation(n, q, boundary=(0, 1), max_iter=500)
+inter = Interpolation(n, q, boundary=(0, 1), max_iter=5000)
 x1 = inter.inter.x
 
 b = 1 + 2 * x1
@@ -68,8 +70,8 @@ plt.show()
 # Error comparison
 plt.plot(x1, abs(u1 - u(x1)), "k:", label="Hermanns-Hernández Spacing")
 plt.plot(x2, abs(u2 - u(x2)), "k--", label="Uniform Spacing")
-plt.xlabel("$x$")
-plt.ylabel("Error: $|u(x) - u_i(x)|$")
+plt.xlabel("$x$", fontsize=14)
+plt.ylabel("Error: $|u(x) - u_i(x)|$", fontsize=14)
 plt.yscale("log")
 plt.legend()
 plt.show()
