@@ -36,10 +36,9 @@ plt.xlabel("$x$", fontsize=16)
 plt.ylabel("$|\\pi(x)|$", fontsize=16)
 plt.ylim(1e-5, 1e-2)
 plt.show()
-raise Exception("Stop")
 
-# Proposed Grid N = 10, q = 6 fig 3. a)
-f = Interpolation(10, 6)
+# Hermanns-Hernández Grid N = 10, q = 6 fig 3. a)
+f = Interpolation(10, 6, max_iter=5000)
 a = f.inter.x
 p = PolyFactor(a, 6)
 y = f.endpoints
@@ -50,8 +49,12 @@ u = [abs(np.vectorize(p, excluded=["i"])(x[i], i)) for i in range(len(x))]
 for w, z in zip(x, u):
     plt.plot(w, z, color="black")
 plt.yscale("log")
+plt.xlabel("$x$", fontsize=16)
+plt.ylabel("$|\\pi(x)|$", fontsize=16)
 plt.ylim(1e-5, 1e-2)
 plt.show()
+
+raise Exception("Stop")
 
 # Grid Spacings fig 3. b)
 delta = [a[i + 1] - a[i] for i in range(len(a) - 1)]
@@ -67,7 +70,7 @@ plt.plot(delta, "o", color="black")
 plt.show()
 
 # Proposed Grid N = 30, q = 6 fig 4. a)
-p = Interpolation(30, 6, tol=1e-8)
+p = Interpolation(30, 6, max_iter=5000)
 a = p.inter.x
 f = PolyFactor(a, 6)
 y = p.endpoints
