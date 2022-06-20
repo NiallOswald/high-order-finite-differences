@@ -1,4 +1,4 @@
-"""Plot the solution to the ODE problem using a uniform grid."""
+"""Plot the solution to the ODE problem using a uniform grid by Moe Okawara."""
 
 from finite_diff.finite_diff import Stencil
 import numpy as np
@@ -35,7 +35,7 @@ print("Second derivatives complete!")
 print("Plotting...")
 k = 10
 eps = [10 ** (-i) for i in np.sqrt(np.linspace(1, 3**2, k))]
-colour_grid = np.linspace(1, 0, k)
+colour_grid = np.linspace(0.9, 0, k)
 
 cmap = plt.get_cmap("viridis")
 
