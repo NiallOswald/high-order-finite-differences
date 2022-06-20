@@ -4,14 +4,16 @@ from finite_diff.finite_diff import Interpolation, PolyFactor
 import numpy as np
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({"font.size": 11})
+
 n = 100
 iters = [100, 500, 1000, 2500, 5000]  # , 10000, 25000]
 
-colour_grid = np.linspace(1, 0, len(iters))
+colour_grid = np.linspace(0.9, 0, len(iters))
 cmap = plt.get_cmap("viridis")
 
 for k, c in zip(iters, colour_grid):
-    p = Interpolation(n, 4, max_iter=k)
+    p = Interpolation(n, 10, max_iter=k)
     x = p.inter.x
     extrema = x[1:-1]
 
@@ -51,7 +53,7 @@ for k, c in zip(iters, colour_grid):
         label=f"k = {k}",
     )
 
-plt.xlabel("$x_i$")
-plt.ylabel("$|\\pi_i(x_i)|$")
+plt.xlabel("$x_i$", fontsize=14)
+plt.ylabel("$|\\pi_i(x_i)|$", fontsize=14)
 plt.legend()
 plt.show()
