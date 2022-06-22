@@ -13,7 +13,9 @@ cmap = plt.get_cmap("viridis")
 
 # True solution
 u = (
-    lambda x: (2 * eps - 1) / (1 - np.exp(-1 / eps)) * (1 - np.exp(-x / eps))
+    lambda x, eps: (2 * eps - 1)
+    / (1 - np.exp(-1 / eps))
+    * (1 - np.exp(-x / eps))
     + x**2
     + (1 - 2 * eps) * x
 )
@@ -26,7 +28,7 @@ u_n = []
 eps = 1e-3
 q = 4
 
-colour_grid_n = np.linspace(1, 0, len(n_vals))
+colour_grid_n = np.linspace(0.9, 0, len(n_vals))
 
 for n, i in zip(n_vals, colour_grid_n):
     inter = Interpolation(n, q, boundary=(0, 1), max_iter=5000)
@@ -54,9 +56,11 @@ plt.legend()
 plt.show()
 
 # Error plots
-errors = [abs(u_n[i] - u_true(x_n[i])) for i in range(len(n_vals))]
+errors = [abs(u_n[i] - u_true(x_n[i], eps)) for i in range(len(n_vals))]
 for i, j in zip(range(len(n_vals)), colour_grid_n):
-    plt.plot(x_n[i], errors[i], c=cmap(j), label=f"$N = {n_vals[i]}$")
+    plt.plot(
+        x_n[i][1:-1], errors[i][1:-1], c=cmap(j), label=f"$N = {n_vals[i]}$"
+    )
 plt.xlabel("$x$", fontsize=16)
 plt.ylabel("Error: $|u(x) - u_i(x)|$", fontsize=16)
 plt.yscale("log")
@@ -70,7 +74,7 @@ u_q = []
 eps = 1e-2
 n = 250
 
-colour_grid_q = np.linspace(1, 0, len(q_vals))
+colour_grid_q = np.linspace(0.9, 0, len(q_vals))
 
 for q, i in zip(q_vals, colour_grid_q):
     inter = Interpolation(n, q, boundary=(0, 1), max_iter=5000)
@@ -98,16 +102,20 @@ plt.legend()
 plt.show()
 
 # Error plots
-errors = [abs(u_q[i] - u_true(x_q[i])) for i in range(len(q_vals))]
+errors = [abs(u_q[i] - u_true(x_q[i], eps)) for i in range(len(q_vals))]
 for i, j in zip(range(len(q_vals)), colour_grid_q):
-    plt.plot(x_q[i], errors[i], c=cmap(j), label=f"$q = {q_vals[i]}$")
+    plt.plot(
+        x_q[i][1:-1], errors[i][1:-1], c=cmap(j), label=f"$q = {q_vals[i]}$"
+    )
 plt.xlabel("$x$", fontsize=16)
 plt.ylabel("Error: $|u(x) - u_i(x)|$", fontsize=16)
 plt.legend()
 plt.show()
 
 for i, j in zip(range(len(q_vals)), colour_grid_q):
-    plt.plot(x_q[i], errors[i], c=cmap(j), label=f"$q = {q_vals[i]}$")
+    plt.plot(
+        x_q[i][1:-1], errors[i][1:-1], c=cmap(j), label=f"$q = {q_vals[i]}$"
+    )
 plt.xlabel("$x$", fontsize=16)
 plt.ylabel("Error: $|u(x) - u_i(x)|$", fontsize=16)
 plt.yscale("log")
