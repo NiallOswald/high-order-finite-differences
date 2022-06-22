@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 plt.rcParams.update({"font.size": 11})
 
 EIGENVALUES = False  # Plot the spectrum of the operators
-FIXED_EPSILON = False  # Generate plots for a fixed epsilon
+FIXED_EPSILON = True  # Generate plots for a fixed epsilon
 
-n = 1000
-q = 2
+n = 100
+q = 10
 
 inter = Interpolation(n, q, boundary=(0, 1), max_iter=5000)
 x = inter.inter.x
@@ -28,8 +28,8 @@ print("Second derivatives complete!")
 
 print("Plotting...")
 k = 10
-eps = [10 ** (-i) for i in np.sqrt(np.linspace(3**2, 5**2, k))]
-colour_grid = np.linspace(1, 0, k)
+eps = [10 ** (-i) for i in np.sqrt(np.linspace(1, 3**2, k))]
+colour_grid = np.linspace(0.9, 0, k)
 
 cmap = plt.get_cmap("viridis")
 
@@ -47,8 +47,8 @@ plt.ylabel("$u(x)$", fontsize=16)
 plt.show()
 
 # Plot for specific epsilon
-e1 = 1e-4
-e2 = 1e-5
+e1 = 1e-2
+e2 = 1e-3
 
 # Solution plot
 if FIXED_EPSILON:
