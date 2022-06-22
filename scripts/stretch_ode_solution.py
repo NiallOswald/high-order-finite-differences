@@ -10,7 +10,7 @@ plt.rcParams.update({"font.size": 11})
 FIXED_EPSILON = True  # Generate plots for a fixed epsilon
 
 n = 100
-q = 4
+q = 10
 
 c = 8
 erf = sp.erf(np.sqrt(c))
@@ -41,7 +41,7 @@ cmap = plt.get_cmap("viridis")
 
 for e, i in zip(reversed(eps), colour_grid):
     a0 = (np.sqrt(np.pi) / 2) * (erf / np.sqrt(c)) * exp
-    a1 = 1 - ((e / 2) * np.pi * (erf) ** 2) * (1 - y) * exp**2
+    a1 = 1 - (e * np.sqrt(c * np.pi) * erf) * (1 - y) * exp
     a = a0 * a1
 
     b = e * (np.pi / 4) * ((erf**2) / c) * exp**2
@@ -68,7 +68,7 @@ if FIXED_EPSILON:
     print(f"Plotting for eps = {e1}...")
 
     a0 = (np.sqrt(np.pi) / 2) * (erf / np.sqrt(c)) * exp
-    a1 = 1 - ((e1 / 2) * np.pi * (erf) ** 2) * (1 - y) * exp**2
+    a1 = 1 - (e1 * np.sqrt(c * np.pi) * erf) * (1 - y) * exp
     a = a0 * a1
 
     b = e1 * (np.pi / 4) * ((erf**2) / c) * exp**2
@@ -79,15 +79,15 @@ if FIXED_EPSILON:
 
     u1 = np.linalg.solve(L1, f)
 
-    plt.xlabel("$x$", fontsize=14)
-    plt.ylabel("$u(x)$", fontsize=14)
+    plt.xlabel("$x$", fontsize=16)
+    plt.ylabel("$u(x)$", fontsize=16)
     plt.plot(x, u1, c="black")
     plt.show()
 
     print(f"Plotting for eps = {e2}...")
 
     a0 = (np.sqrt(np.pi) / 2) * (erf / np.sqrt(c)) * exp
-    a1 = 1 - ((e2 / 2) * np.pi * (erf) ** 2) * (1 - y) * exp**2
+    a1 = 1 - (e2 * np.sqrt(c * np.pi) * erf) * (1 - y) * exp
     a = a0 * a1
 
     b = e2 * (np.pi / 4) * ((erf**2) / c) * exp**2
@@ -98,7 +98,7 @@ if FIXED_EPSILON:
 
     u2 = np.linalg.solve(L2, f)
 
-    plt.xlabel("$x$", fontsize=14)
-    plt.ylabel("$u(x)$", fontsize=14)
+    plt.xlabel("$x$", fontsize=16)
+    plt.ylabel("$u(x)$", fontsize=16)
     plt.plot(x, u2, c="black")
     plt.show()
