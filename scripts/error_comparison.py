@@ -75,7 +75,7 @@ B = np.array([inter.nderivative(u, i, 2) for i, u in enumerate(y)])
 print("Second derivatives complete!")
 
 a0 = (np.sqrt(np.pi) / 2) * (erf / np.sqrt(c)) * exp
-a1 = 1 - ((eps / 2) * np.pi * (erf) ** 2) * (1 - y) * exp**2
+a1 = 1 - (eps * np.sqrt(c * np.pi) * erf) * (1 - y) * exp
 a = a0 * a1
 
 b = eps * (np.pi / 4) * ((erf**2) / c) * exp**2
